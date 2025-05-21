@@ -1,5 +1,4 @@
 import React from "react";
-import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 import { useState, useEffect, useReducer } from "react";
 import { useTranslation } from "react-i18next";
 import { FormComposerV2, Loader } from "@egovernments/digit-ui-components";
@@ -7,31 +6,19 @@ import CheckListConfig from "../../../configs/checkListConfig.js";
 import { updateCheckListConfig } from "../../../configs/checkListConfig.js";
 import { useParams } from "react-router-dom";
 import transformViewCheckList from "../../../utils/createUtils.js";
+import { transformCreateCheckList } from "../../../utils/createUtils.js";
 
-const formReducer = (states, action) => {
-  switch (action.type) {
-    case 'UPDATE_FORM':
-      return {
-        ...states,
-        formData: action.payload
-      };
-    default:
-      return states;
-  }
-};
+
 
 const CheckList = () => {
-  const { state } = useLocation();
   const { accid, id, code } = useParams();
   const { t } = useTranslation();
   const [cardItems, setCardItems] = useState([]);
-  const [states, dispatch] = useReducer(formReducer, {
-    formData: {}
-  });
+  const [formData, setFormData] = useState({});
 
   const [config, setConfig] = useState(null);
 
-  const request = {
+  const search_request = {
     url: "/health-service-request/service/definition/v1/_search",
     params: {},
     body: {},
@@ -41,10 +28,22 @@ const CheckList = () => {
       enable: false,
     },
   }
-  const mutation = Digit.Hooks.useCustomAPIMutationHook(request);
+  const smutation = Digit.Hooks.useCustomAPIMutationHook(search_request);
+
+  const create_request = {
+    url: "/health-service-request/service/v1/_create",
+    params: {},
+    body: {},
+    method: "POST",
+    headers: {},
+    config: {
+      enable: false,
+    },
+  }
+  const cmutation = Digit.Hooks.useCustomAPIMutationHook(create_request);
 
   const getcarditems = async (code) => {
-    await mutation.mutate(
+    await smutation.mutate(
       {
         url: "/health-service-request/service/definition/v1/_search",
         method: "POST",
@@ -65,6 +64,7 @@ const CheckList = () => {
       }
     )
   }
+
   useEffect(() => {
     getcarditems([code]);
   }, [code]);
@@ -77,16 +77,35 @@ const CheckList = () => {
 
   const onSubmit = async (data) => {
     console.log(data, "data");
+    const fetchdata = async (data) => {
+      await cmutation.mutate(
+        {
+          url: "/health-service-request/service/v1/_create",
+          method: "POST",
+          body: transformCreateCheckList(id, accid, data),
+          config: {
+            enable: false,
+          },
+        },
+        {
+          onSuccess: (res) => {
+            console.log(res, "application_response");
+            setCardItems(res?.ServiceDefinitions || []);
+          },
+          onError: () => {
+            console.log("Error occurred");
+            setCardItems([]);
+          },
+        }
+      )
+    }
+    fetchdata(data);
   };
 
-  const handleFormValueChange = (formData) => {
-    console.log(formData,"formdata");
-    if (JSON.stringify(formData) !== JSON.stringify(states.formData)) {
-      dispatch({
-        type: 'UPDATE_FORM',
-        payload: formData
-      });
-      setConfig(updateCheckListConfig(config, formData));
+  const handleFormValueChange = (updatedFormData) => {
+    if (JSON.stringify(updatedFormData) !== JSON.stringify(formData)) {
+      setFormData(updatedFormData);
+      setConfig(updateCheckListConfig(config, updatedFormData));
     }
   };
 
@@ -101,7 +120,7 @@ const CheckList = () => {
           fieldStyle={{ marginRight: 2 }}
         />
       ) : (
-        <Loader/>
+        <Loader />
       )}
     </div>
   );

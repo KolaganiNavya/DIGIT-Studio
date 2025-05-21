@@ -1,7 +1,7 @@
 import React from "react";
 
 export const CheckListConfig = (item) => {
-    let response =item[0];
+    let response = item[0];
     const createConfig = (field, label, codes, hide) => {
         let type = field.dataType === "SingleValueList" ? "radio" : "text";
         return {
@@ -44,13 +44,13 @@ export const updateCheckListConfig = (config, values) => {
     config[0].body.forEach(item => {
         const part = item.key.split(".");
         if (part.length > 1) {
-            const code = part[0];  
-            const value = part[1];
+            const code = part[0];
+            const value = part[part.length - 2];
             const selectedValue = values[code]?.code || values[code];
             if (values[code] && selectedValue === value && item.populators.hideInForm == true) {
                 item.populators.hideInForm = false;
             }
-            if (values[code] && selectedValue !== value && item.populators.hideInForm == false){
+            if (values[code] && selectedValue !== value && item.populators.hideInForm == false) {
                 item.populators.hideInForm = true;
             }
         }

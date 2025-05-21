@@ -7,6 +7,7 @@ import { Switch } from "react-router-dom";
 import DigitDemoComponent from "./DigitDemo/digitDemoComponent";
 import ViewCheckListCards from "./DigitDemo/viewCheckListCards";
 import CheckList from "./DigitDemo/checkList";
+import ViewApplication from "./DigitDemo/viewApplication";
 
 const SampleBreadCrumbs = ({ location }) => {
   const { t } = useTranslation();
@@ -34,6 +35,7 @@ const App = ({ path, stateCode, userType, tenants }) => {
         <PrivateRoute path={`${path}/:module/Apply`} component={() => <DigitDemoComponent />} />
         <PrivateRoute path={`${path}/viewapp`} component={() => <ViewCheckListCards />} />
         <PrivateRoute path={`${path}/checklist/:accid/:id/:code`} component={() => <CheckList />} />
+        <PrivateRoute path={`${path}/viewresponse/:accid/:id/:code`} component={() => <ViewApplication />} />
       </AppContainer>
     </Switch>
   );

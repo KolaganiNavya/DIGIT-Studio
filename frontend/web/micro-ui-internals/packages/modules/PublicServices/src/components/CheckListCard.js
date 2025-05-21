@@ -1,11 +1,12 @@
 import React from "react";
-import { Card, TextBlock, Button } from "@egovernments/digit-ui-components";
+import { Card, TextBlock, Button, Loader } from "@egovernments/digit-ui-components";
 import { transformViewApplication } from "../utils/createUtils";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 const CheckListCard = (props) => {
     const [filled, setFilled] = useState(false);
+    const [loading, setLoading] = useState(false);
     const history = useHistory();
 
     const style = {
@@ -40,31 +41,39 @@ const CheckListCard = (props) => {
             },
             {
                 onSuccess: (res) => {
-                    if (res.Services && res.Services.length > 0) {
+                    let field = res.Services.filter(items => items.serviceDefId == id);
+                    if (field && field.length > 0) {
                         setFilled(true);
                     }
+                    setLoading(true);
                 },
                 onError: () => {
                     console.log("Error checking filled status");
+                    setLoading(true);
                 },
             }
         )
     }
 
     useEffect(() => {
-        isFilled(props.item.code, props.accid)
-    }, [props.item.code, props.accid]);
+        isFilled(props.item.id, props.accid)
+    }, [props.item.id, props.accid]);
 
     return (
-        <Card type="primary" style={style}>
-            <TextBlock body={props.item.code} />
-            {filled ? (
-                <Button label="View Response" onClick={() => history.push({ pathname: `/${window.contextPath}/employee/publicservices/viewresponse/${props.accid}/${props.item.id}/${props.item.code}` })} />
+        <div>
+            {loading ? (
+                <Card type="primary" style={style}>
+                    <TextBlock body={props.item.code} />
+                    {filled ? (
+                        <Button label="View Response" onClick={() => history.push({ pathname: `/${window.contextPath}/employee/publicservices/viewresponse/${props.accid}/${props.item.id}/${props.item.code}` })} />
+                    ) : (
+                        <Button label="Fill Checklist" onClick={() => history.push({ pathname: `/${window.contextPath}/employee/publicservices/checklist/${props.accid}/${props.item.id}/${props.item.code}` })} />
+                    )}
+                </Card>
             ) : (
-                <Button label="Fill Checklist" onClick={() => history.push({
-                    pathname: `/${window.contextPath}/employee/publicservices/checklist/${props.accid}/${props.item.id}/${props.item.code}`})} />
+                <Loader />
             )}
-        </Card>
+        </div>
     );
 };
 
