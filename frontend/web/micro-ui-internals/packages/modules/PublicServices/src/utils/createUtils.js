@@ -204,25 +204,45 @@ export const transformCreateCheckList = (id, accid, data) => {
         const att = [];
         const processField = (key, value, parentKey = null) => {
             if (typeof value === "object" && value.code) {
-                att.push({
-                    dataType: "SingleValueList",
-                    value: value.code,
-                    attributeCode: parentKey ? `${parentKey}.${key}` : key,
-                    tenantId,
-                });
+                if (value.code != "") {
+                    att.push({
+                        dataType: "SingleValueList",
+                        value: value.code,
+                        attributeCode: parentKey ? `${parentKey}.${key}` : key,
+                        tenantId: tenantId,
+                    });
+                }
+                else {
+                    att.push({
+                        dataType: "SingleValueList",
+                        value: "NOT_SELECTED",
+                        attributeCode: parentKey ? `${parentKey}.${key}` : key,
+                        tenantId: tenantId,
+                    });
+                }
                 if (value[value.code]) {
-                    for(const k in value[value.code]){
-                    processField(k,value[value.code][k], parentKey ? `${parentKey}.${key}.${value.code}`: `${key}.${value.code}`);
+                    for (const k in value[value.code]) {
+                        processField(k, value[value.code][k], parentKey ? `${parentKey}.${key}.${value.code}` : `${key}.${value.code}`);
                     }
                 }
             }
             else {
-                att.push({
-                    dataType: "text",
-                    value,
-                    attributeCode: parentKey ? `${parentKey}.${key}` : key,
-                    tenantId,
-                });
+                if (value != "") {
+                    att.push({
+                        dataType: "text",
+                        value: value,
+                        attributeCode: parentKey ? `${parentKey}.${key}` : key,
+                        tenantId: tenantId,
+                    });
+                }
+                else{
+                    att.push({
+                        dataType: "text",
+                        value: "NOT_SELECTED",
+                        attributeCode: parentKey ? `${parentKey}.${key}` : key,
+                        tenantId: tenantId,
+                    });
+                }
             }
         };
 

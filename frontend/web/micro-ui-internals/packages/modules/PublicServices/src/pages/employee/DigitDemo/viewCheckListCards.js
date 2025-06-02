@@ -8,12 +8,9 @@ import CheckListCard from "../../../components/CheckListCard.js";
 const ViewCheckListCards = () => {
 
     const code = [
-        // "SMC BHAVYA.TRAINING_SUPERVISION.TEAM_SUPERVISOR",
-        // "LLIN-mz_april_2025.TRAINING_SUPERVISION.PROVINCIAL_SUPERVISOR",
-        // "apr14.TRAINING_SUPERVISION.PROVINCIAL_SUPERVISOR",
-        // "SMC BHAVYA.T
-        // RAINING_SUPERVISION.DISTRICT_SUPERVISOR",
-        // "SMC Dev.TEAM_FORMATION.DISTRIBUTOR"
+        "OLD_COMMUNITY",
+        "BCD_COMMUNITY",
+        "ABC_COMMUNITY"
     ];
     const accountID = "873c8ebc-487b-4e0a-a9cf-ec98d57fd5ff";
     const [cardItems, setCardItems] = useState([]);

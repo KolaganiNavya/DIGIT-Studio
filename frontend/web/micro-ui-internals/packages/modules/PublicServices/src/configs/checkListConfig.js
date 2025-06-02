@@ -4,23 +4,40 @@ export const CheckListConfig = (item) => {
     let response = item[0];
     const createConfig = (field, label, codes, hide) => {
         let type = field.dataType === "SingleValueList" ? "radio" : "text";
-        return {
-            isMandatory: field.required,
-            key: field.code,
-            type: type,
-            label: `${label}.${codes}`,
-            disable: false,
-            populators: {
-                name: field.code,
-                optionsKey: "name",
-                hideInForm: hide,
-                alignVertical: true,
-                options: field.values?.slice(0, -1).map(item => ({
-                    code: item,
-                    name: `${label}.${codes}.${item}`,
-                }))
-            },
-        };
+        if (type == "radio") {
+            return {
+                isMandatory: field.required,
+                key: field.code,
+                type: type,
+                label: `${label}.${codes}`,
+                disable: false,
+                populators: {
+                    name: field.code,
+                    optionsKey: "name",
+                    hideInForm: hide,
+                    alignVertical: true,
+                    options: field.values?.map(item => ({
+                        code: item,
+                        name: `${label}.${item}`,
+                    }))
+                },
+            }
+        }
+        else {
+            return {
+                isMandatory: field.required,
+                key: field.code,
+                type: type,
+                label: `${label}.${codes}`,
+                disable: false,
+                placeholder:field?.additionalFields?.placeholder,
+                populators: {
+                    name: field.code,
+                    hideInForm: hide,
+                    alignVertical: true,
+                },
+            }
+        }
     };
     let config = [];
     let fields = response.attributes;
